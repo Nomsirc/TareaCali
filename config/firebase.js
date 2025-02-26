@@ -1,7 +1,9 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./tareacali-firebase-adminsdk-fbsvc-43c220d696.json'); // Ruta al archivo JSON de credenciales
 
-// Inicializa Firebase Admin SDK
+// Cargar las credenciales desde la variable de entorno
+const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+
+// Inicializar Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
