@@ -1,18 +1,31 @@
 const db = require('../config/firebase');
 
 const saveGrade = async (req, res) => {
-  const { value } = req.body;
+  const { grades } = req.body; // Esperamos un array de calificaciones
   const username = req.user.id; // Obtén el nombre de usuario del token
 
   try {
-    // Guarda la calificación en Firestore
-    const gradeRef = db.collection('grades').doc(); // Crea un ID automático
-    await gradeRef.set({
-      username,
-      value,
-    });
+    const savedGrades = [];
 
-    res.json({ id: gradeRef.id, username, value });
+    // Itera sobre cada calificación y guárdala en Firestore
+    for (const grade of grades) {
+      const { value } = grade;
+
+      // Verifica que el value esté presente
+      if (value === undefined) {
+        return res.status(400).json({ msg: 'Cada calificación debe incluir un value' });
+      }
+
+      const gradeRef = db.collection('grades').doc(); // Crea un ID automático
+      await gradeRef.set({
+        username,
+        value,
+      });
+
+      savedGrades.push({ id: gradeRef.id, username, value });
+    }
+
+    res.json(savedGrades);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Error del servidor');
